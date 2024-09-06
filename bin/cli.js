@@ -2,9 +2,9 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
-
 async function init() {
-  const answers = await inquirer.prompt([
+  try{
+  const answers = await inquirer.default.prompt([
     {
       type: 'input',
       name: 'projectName',
@@ -42,7 +42,10 @@ async function init() {
   ]);
 
   // Generate project directory and files based on answers
-  createProjectStructure(answers);
+  createProjectStructure(answers); }
+   catch (error) {
+    console.error('Error occurred:', error);
+  }
 }
 
 function createProjectStructure(answers) {
@@ -57,3 +60,4 @@ function createProjectStructure(answers) {
 }
 
 init();
+
