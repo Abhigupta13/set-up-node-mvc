@@ -1,18 +1,22 @@
 {
   "name": "set-up-node-mvc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A NPM package for set up mvc architecture for node and express with selected language and database",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Abhishek Kumar Gupta",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Abhigupta13/set-up-node-mvc"
+  },
   "dependencies": {
     "fs": "^0.0.1-security",
     "inquirer": "^10.2.0",
     "path": "^0.12.7"
   },
-  "bin": {
+  "lib": {
     "set-up-node-mvc": "./bin/cli.js"
   },
   "main": "bin/cli.js"
