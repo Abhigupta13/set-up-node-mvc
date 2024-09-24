@@ -1,6 +1,6 @@
 {
   "name": "set-up-node-mvc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A NPM package for set up mvc architecture for node and express with selected language and database",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
