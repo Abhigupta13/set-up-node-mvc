@@ -5,7 +5,7 @@ const path = require('path');
 
 async function init() {
   try {
-    const answers = await inquirer.prompt([
+    const answers = await inquirer.default.prompt([
       {
         type: 'input',
         name: 'projectName',
@@ -66,7 +66,7 @@ function createProjectStructure(answers) {
   fs.writeFileSync(indexFile, expressCode);
 
   // Create folders and demo files
-  const folders = ['controllers', 'services', 'repositories', 'routes', 'middlewares', 'config', 'utils'];
+  const folders = ['controllers', 'services', 'repositories', 'routes', 'middleware', 'config', 'utils'];
   const tsFolders = ['types', 'enums'];
 
   folders.forEach(folder => {
