@@ -1,6 +1,6 @@
 {
   "name": "set-up-node-mvc",
-  "version": "1.1.0",
+  "version": "1.1.6",
   "description": "A NPM package for set up mvc architecture for node and express with selected language and database",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,7 @@
     "inquirer": "^10.2.0",
     "path": "^0.12.7"
   },
-  "lib": {
+  "bin": {
     "set-up-node-mvc": "./bin/cli.js"
   },
   "main": "bin/cli.js"
