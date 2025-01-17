@@ -1,7 +1,15 @@
 
 # Set-Up-Node-MVC
 
-**Set-up-node-mvc** is a powerful CLI tool to quickly scaffold MVC architectures for Node.js applications, supporting various databases and configurations. It helps you set up a well-structured Node.js project with minimal effort, allowing you to focus on building your application rather than configuring the basics.
+## ⚠️ **Disclaimer** ⚠️
+
+## **This package will not work if installed with `npm install set-up-node-mvc`.**  
+## You must use to run it directly from the npm registry without the need for global installation. 
+```bash
+npx set-up-node-mvc
+````
+
+### **Set-up-node-mvc** is a powerful CLI tool to quickly scaffold MVC architectures for Node.js applications, supporting various databases and configurations. It helps you set up a well-structured Node.js project with minimal effort, allowing you to focus on building your application rather than configuring the basics.
 
 ## Features:
 - **Interactive Setup**: Choose the programming language (JavaScript or TypeScript) and easily configure your project.
@@ -79,11 +87,3 @@ Additional files:
 - **index.js / index.ts** - The entry point for your app.
 - **.env** - For environment variables.
 - **.gitignore** - To ignore unnecessary files in version control.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more information.
-
----
-
-This README now includes instructions for using `npx`, installation options, and details on how to run the project. Let me know if you'd like any further modifications!
