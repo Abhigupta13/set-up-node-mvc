@@ -3,8 +3,7 @@
 
 ## ⚠️ **Disclaimer** ⚠️
 
-## **This package will not work if installed with `npm install set-up-node-mvc`.**  
-## You must use to run it directly from the npm registry without the need for global installation. 
+### You must use to run it directly from the npm registry without the need for global installation. 
 ```bash
 npx set-up-node-mvc
 ````
