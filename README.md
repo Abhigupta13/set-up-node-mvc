@@ -3,7 +3,7 @@
 
 ## ⚠️ **Disclaimer** ⚠️
 
-### You must use to run it directly from the npm registry without the need for global installation. 
+### You must run it with npx to execute it directly from the npm registry, without the need for global installation.
 ```bash
 npx set-up-node-mvc
 ````
