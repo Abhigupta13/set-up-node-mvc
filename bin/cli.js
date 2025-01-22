@@ -45,21 +45,24 @@ function createProjectStructure(answers) {
     const routes = require('./${answers.projectName}/routes');
     app.use(express.json());
     app.use('/api', routes);
-    app.listen(3000, () => console.log('Server running on port 3000'));
+    
+    app.listen(3000, () => 
+        console.log('Server running on port 3000')
+        );
   `;
   fs.writeFileSync(indexFile, expressCode.trim());
 
   // Create folder structure
-  const folders = ['controllers', 'services', 'repositories', 'routes', 'middleware', 'config', 'utils'];
+  const folders = ['controllers', 'services', 'repositories', 'routes', 'middleware', 'config', 'utils','models'];
   const tsFolders = ['types', 'enums'];
 
   folders.forEach((folder) => {
     const folderPath = path.join(rootDir, folder);
     fs.mkdirSync(folderPath);
-    fs.writeFileSync(
-      path.join(folderPath, `demo.${answers.language === 'TypeScript' ? 'ts' : 'js'}`),
-      `// Demo file for ${folder}`
-    );
+    // fs.writeFileSync(
+    //   path.join(folderPath, `demo.${answers.language === 'TypeScript' ? 'ts' : 'js'}`),
+    //   `// Demo file for ${folder}`
+    // );
   });
 
   if (answers.language === 'TypeScript') {
