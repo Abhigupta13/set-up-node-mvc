@@ -10,7 +10,7 @@ const tsTemplates = require('../templates/tsTemplates');
 
 async function init() {
   try {
-    const answers = await inquirer.prompt([
+    const answers = await inquirer.default.prompt([
       {
         type: 'input',
         name: 'Source Folder',
