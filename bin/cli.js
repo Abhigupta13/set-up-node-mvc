@@ -36,6 +36,12 @@ async function init() {
     installDependencies(answers);
 
     if (answers.authentication === 'Yes') { // Fixed: Check for exact string match
+      // Install auth dependencies
+      const projectRoot = process.cwd();
+      execSync('npm install jsonwebtoken bcrypt', { cwd: projectRoot, stdio: 'inherit' });
+      if (answers.language === 'TypeScript') {
+        execSync('npm install -D @types/jsonwebtoken @types/bcrypt', { cwd: projectRoot, stdio: 'inherit' });
+      }
       createAuthFiles(answers.language, answers.projectName); // Pass projectName to createAuthFiles
     }
 
@@ -240,20 +246,20 @@ function createAuthFiles(language, projectName) { // Add projectName parameter
     templates = tsTemplates;
   }
 
-  // Fixed: Use projectName instead of hardcoded 'src'
   const fileExt = language === 'TypeScript' ? '.ts' : '.js';
-  const authDir = path.join(projectRoot, projectName, 'auth');
-  
-  if (!fs.existsSync(authDir)) {
-    fs.mkdirSync(authDir, { recursive: true });
-  }
+  const rootDir = path.join(projectRoot, projectName);
 
-  // Create auth files using templates
+  // Create auth files in their respective folders
   if (templates.userController && templates.userService && templates.userRepository && templates.userRoute) {
-    fs.writeFileSync(path.join(authDir, `auth.controller${fileExt}`), templates.userController);
-    fs.writeFileSync(path.join(authDir, `auth.service${fileExt}`), templates.userService);
-    fs.writeFileSync(path.join(authDir, `auth.repository${fileExt}`), templates.userRepository);
-    fs.writeFileSync(path.join(authDir, `auth.routes${fileExt}`), templates.userRoute);
+    const controllersDir = path.join(rootDir, 'controllers');
+    const servicesDir = path.join(rootDir, 'services'); 
+    const repositoriesDir = path.join(rootDir, 'repositories');
+    const routesDir = path.join(rootDir, 'routes');
+
+    fs.writeFileSync(path.join(controllersDir, `authController${fileExt}`), templates.userController);
+    fs.writeFileSync(path.join(servicesDir, `authService${fileExt}`), templates.userService);
+    fs.writeFileSync(path.join(repositoriesDir, `authRepository${fileExt}`), templates.userRepository);
+    fs.writeFileSync(path.join(routesDir, `authRoutes${fileExt}`), templates.userRoute);
   }
 
   console.log('Authentication files created successfully!');
