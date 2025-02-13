@@ -112,3 +112,4 @@ const jsTemplates = {
     `,
 };
 
+module.exports = jsTemplates;

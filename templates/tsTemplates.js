@@ -123,3 +123,4 @@ const tsTemplates = {
         };
     `,
 };
+module.exports = tsTemplates;
