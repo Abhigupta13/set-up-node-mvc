@@ -54,23 +54,6 @@ async function init() {
   }
 }
 
-// function createDemoFiles(answers, rootDir) {
-//   const templates = answers.language === 'TypeScript' ? tsTemplates : jsTemplates;
-
-//   const demoContent = {
-//     controllers: templates.userController,
-//     services: templates.userService,
-//     repositories: templates.userRepository,
-//     routes: templates.userRoute
-//   };
-
-//   // Create demo files in each directory
-//   const fileExt = answers.language === 'TypeScript' ? '.ts' : '.js';
-//   fs.writeFileSync(path.join(rootDir, 'controllers', `userController${fileExt}`), demoContent.controllers);
-//   fs.writeFileSync(path.join(rootDir, 'services', `userService${fileExt}`), demoContent.services);
-//   fs.writeFileSync(path.join(rootDir, 'repositories', `userRepository${fileExt}`), demoContent.repositories);
-//   fs.writeFileSync(path.join(rootDir, 'routes', `userRoute${fileExt}`), demoContent.routes);
-// }
 
 function createProjectStructure(answers) {
   const projectRoot = process.cwd();
@@ -170,11 +153,9 @@ function createProjectStructure(answers) {
   const gitignoreFile = path.join(projectRoot, '.gitignore');
   
   // Fixed: Remove duplicate writes and undefined variables
-  fs.writeFileSync(envFile, `PORT=3000\nDB_URL=mongodb://localhost:27017/myapp\n`);
+  fs.writeFileSync(envFile, `PORT=3000\nDB_URL=mongodb://localhost:27017/myapp\nJWT_KEY=your_jwt_secret_key\n`);
   fs.writeFileSync(gitignoreFile, 'node_modules/\n.env\n');
 
-  // Create demo files
-  // createDemoFiles(answers, rootDir);
 }
 
 function initializePackageJson(answers) {
@@ -263,6 +244,7 @@ function createAuthFiles(language, projectName) { // Add projectName parameter
   }
 
   console.log('Authentication files created successfully!');
+  console.log('Database update coming soon... For now set up your database manually');
 }
 
 init();

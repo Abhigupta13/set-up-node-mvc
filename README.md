@@ -1,88 +1,97 @@
 
-# Set-Up-Node-MVC
+# **Set-Up-Node-MVC**  
+*A CLI tool to scaffold a Node.js backend with MVC architecture and built-in authentication*  
 
-## ⚠️ **Disclaimer** ⚠️
-
-### You must run it with npx to execute it directly from the npm registry, without the need for global installation.
-```bash
-npx set-up-node-mvc
-````
-
-### **Set-up-node-mvc** is a powerful CLI tool to quickly scaffold MVC architectures for Node.js applications, supporting various databases and configurations. It helps you set up a well-structured Node.js project with minimal effort, allowing you to focus on building your application rather than configuring the basics.
-
-## Features:
-- **Interactive Setup**: Choose the programming language (JavaScript or TypeScript) and easily configure your project.
-- **MVC Architecture**: Automatically generates directories for controllers, services, repositories, routes, middleware, etc.
-- **Express Setup**: Configures an Express server with basic routing to get you started immediately.
-- **TypeScript Support**: Supports TypeScript, including TypeScript configuration and live-reload using `ts-node-dev`.
-- **Database Support**: You can extend it with database configurations based on your needs.
-
-## Installation
-
-# Using npx
-
-You can run `set-up-node-mvc` without installing it globally by using `npx`, which allows you to execute the package directly from the npm registry.
-
-Simply run:
+## ⚠️ **Disclaimer**  
+You must run this tool using `npx` to execute it directly from the npm registry without requiring a global installation.  
 
 ```bash
 npx set-up-node-mvc
 ```
 
-This will guide you through the setup process, asking you for your preferred programming language and project configurations, and then generating the project structure.
+## **Overview**  
+**Set-Up-Node-MVC** is a powerful CLI tool that quickly scaffolds a structured **MVC (Model-View-Controller)** architecture for Node.js applications. It simplifies backend setup by generating a well-organized project with essential configurations, allowing developers to focus on building features instead of setting up the boilerplate.  
 
-### Installing Locally (Optional)
+## **Key Features**  
+- **Interactive Setup** – Choose between JavaScript and TypeScript during setup.  
+- **MVC Architecture** – Generates a modular structure with `controllers`, `services`, `repositories`, and `routes`.  
+- **Express.js Integration** – Sets up an Express server with basic routing.  
+- **TypeScript Support** – Includes TypeScript configuration with `ts-node-dev` for live reload.  
+- **Database Ready** – Provides flexibility to integrate various databases.  
+- **Built-in JWT Authentication** – Implements secure user authentication with JSON Web Tokens.  
 
-If you prefer to install the package locally in your project:
+## **Generated Project Structure**  
 
-1. Install the package:
+```
+project-root/
+      src/
+         │── controllers/      # Route handlers  
+         │── services/         # Business logic  
+         │── repositories/     # Database queries and data access  
+         │── routes/           # API route definitions  
+         │── middleware/       # Middleware functions (e.g., authentication)  
+         │── config/           # Configuration files  
+         │── utils/            # Utility functions  
+      │── index.js (or index.ts)  # Entry point  
+      │── .env              # Environment variables  
+      │── .gitignore        # Version control exclusions  
+```
 
-   ```bash
-   npm install --save-dev set-up-node-mvc
-   ```
+## **JWT Authentication**  
+The CLI automatically sets up authentication with JWT, including:  
+- **User Registration** – Secure signup with password hashing.  
+- **User Login** – Issues JWT tokens for authenticated users.  
+- **Protected Routes** – Middleware to secure endpoints using JWT.  
+- **Configurable Token Settings** – Modify `JWT_KEY` and expiration in the `.env` file.  
 
-2. Run the setup:
+## **Installation & Usage**  
 
-   ```bash
-   npx set-up-node-mvc
-   ```
+### **Run with npx (Recommended)**  
+To use the CLI without installing globally, simply run:  
 
-## Usage
+```bash
+npx set-up-node-mvc
+```
 
-Once the setup is complete, the project structure is generated. You can use the following commands to start your server:
+Follow the interactive prompts to configure your project.  
 
-### JavaScript:
-If you chose JavaScript, you can start the server by running:
+### **Install Locally (Optional)**  
+You can install the package locally and run it within your project:  
 
+```bash
+npm install --save-dev set-up-node-mvc
+npx set-up-node-mvc
+```
+
+## **Starting the Server**  
+
+Once the project is set up, navigate to the project directory and start the server:  
+
+### **For JavaScript:**  
 ```bash
 npm run dev
 ```
 
-This will start the Express server, and your API will be accessible at `http://localhost:3000`.
-
-### TypeScript:
-For TypeScript, run:
-
+### **For TypeScript:**  
 ```bash
 npm run dev
 ```
+(This runs with `ts-node-dev` for live reloading.)  
 
-The server will start with TypeScript compilation using `ts-node-dev` for live-reloading.
+## **Conclusion**  
+**Set-Up-Node-MVC** is designed to save developers time by providing a well-structured backend setup with minimal effort. It’s a great choice for quickly setting up a Node.js application with **Express.js**, **JWT authentication**, and **MVC architecture**.  
 
-## Project Structure
+---
 
-The generated project structure includes:
+This version improves clarity, formatting, and professionalism while keeping it beginner-friendly. Let me know if you want any modifications! 🚀
 
-- **controllers/** - For route handlers.
-- **services/** - For business logic.
-- **repositories/** - For data access (e.g., database queries).
-- **routes/** - For defining the API routes.
-- **middleware/** - For middleware functions like authentication.
-- **config/** - For configuration files.
-- **utils/** - For utility functions.
 
-Additional files:
+### **Designed & Developed by**  
+**Abhishek Kumar Gupta** – Software Developer  
 
-- **index.js / index.ts** - The entry point for your app.
-- **.env** - For environment variables.
-- **.gitignore** - To ignore unnecessary files in version control.
+📧 **Email:** [abhishek.akg13@gmail.com](mailto:abhishek.akg13@gmail.com)  
+🔗 **GitHub:** [github.com/Abhigupta13](https://github.com/Abhigupta13)  
+🔗 **LinkedIn:** [linkedin.com/in/abhigupta3007](https://www.linkedin.com/in/abhigupta3007/)  
+🔗 **Portfolio:** [https://abhishek-gupta-portfolio.vercel.app/](https://abhishek-gupta-portfolio.vercel.app/)
+
+---
