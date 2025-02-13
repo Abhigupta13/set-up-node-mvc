@@ -122,5 +122,16 @@ const tsTemplates = {
             findUserByEmail
         };
     `,
+    userRoutes: `
+        import express, { Router } from 'express';
+        const { create, signIn } = require('../controllers/userController');
+
+        const router: Router = express.Router();
+
+        router.post('/signup', create);
+        router.post('/signin', signIn);
+
+        module.exports = router;
+    `,
 };
 module.exports = tsTemplates;

@@ -58,11 +58,13 @@ function readTemplateFile(templatePath) {
 }
 
 function createDemoFiles(answers, rootDir) {
+  const templates = answers.language === 'TypeScript' ? tsTemplates : jsTemplates;
+
   const demoContent = {
-    controllers: answers.language === 'TypeScript' ? fs.readFileSync(path.join(__dirname, '../templates/tsTemplates.txt'), 'utf-8') : fs.readFileSync(path.join(__dirname, '../templates/jsTemplates.txt'), 'utf-8'),
-    services: answers.language === 'TypeScript' ? fs.readFileSync(path.join(__dirname, '../templates/tsTemplates.txt'), 'utf-8') : fs.readFileSync(path.join(__dirname, '../templates/jsTemplates.txt'), 'utf-8'),
-    repositories: answers.language === 'TypeScript' ? fs.readFileSync(path.join(__dirname, '../templates/tsTemplates.txt'), 'utf-8') : fs.readFileSync(path.join(__dirname, '../templates/jsTemplates.txt'), 'utf-8'),
-    routes: answers.language === 'TypeScript' ? fs.readFileSync(path.join(__dirname, '../templates/tsTemplates.txt'), 'utf-8') : fs.readFileSync(path.join(__dirname, '../templates/jsTemplates.txt'), 'utf-8'),
+    controllers: templates.userController,
+    services: templates.userService,
+    repositories: templates.userRepository,
+    routes: templates.userRoutes
   };
 
   // Create demo.txt files in each directory
