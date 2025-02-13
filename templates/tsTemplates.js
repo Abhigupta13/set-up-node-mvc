@@ -3,11 +3,11 @@
 const tsTemplates = {
     userController: `
         const { Request, Response } = require('express');
-        const { UserService } = require('../services/userService');
+        const { registerUser, loginUser } = require('../services/userService');
 
         const create = async (req: Request, res: Response): Promise<Response> => {
             try {
-                const response = await UserService.registerUser({
+                const response = await registerUser({
                     email: req.body.email,
                     password: req.body.password
                 });
@@ -29,7 +29,7 @@ const tsTemplates = {
 
         const signIn = async (req: Request, res: Response): Promise<Response> => {
             try {
-                const response = await UserService.loginUser(req.body.email, req.body.password);
+                const response = await loginUser(req.body.email, req.body.password);
                 return res.status(200).json({
                     success: true,
                     data: response,
@@ -54,7 +54,7 @@ const tsTemplates = {
     userService: `
         const jwt = require('jsonwebtoken');
         const bcrypt = require('bcrypt');
-        const { UserRepository } = require('../repositories/userRepository');
+        const { createUser, findUserByEmail } = require('../repositories/userRepository');
         const { JWT_KEY } = require('../config/serverConfig');
 
         interface UserData {
@@ -62,44 +62,39 @@ const tsTemplates = {
             password: string;
         }
 
-        class UserService {
-            private userRepository: UserRepository;
-
-            constructor() {
-                this.userRepository = new UserRepository();
+        const registerUser = async (userData: UserData): Promise<any> => {
+            const existingUser = await findUserByEmail(userData.email);
+            if (existingUser) {
+                throw new Error('User already exists');
             }
 
-            async registerUser(userData: UserData): Promise<any> {
-                const existingUser = await this.userRepository.findUserByEmail(userData.email);
-                if (existingUser) {
-                    throw new Error('User already exists');
-                }
+            const hashedPassword = await bcrypt.hash(userData.password, 10);
+            const newUser = await createUser({ 
+                ...userData, 
+                password: hashedPassword 
+            });
+            return newUser;
+        };
 
-                const hashedPassword = await bcrypt.hash(userData.password, 10);
-                const newUser = await this.userRepository.createUser({ 
-                    ...userData, 
-                    password: hashedPassword 
-                });
-                return newUser;
+        const loginUser = async (email: string, plainPassword: string): Promise<string> => {
+            const user = await findUserByEmail(email);
+            if (!user) {
+                throw new Error('User not found');
             }
 
-            async loginUser(email: string, plainPassword: string): Promise<string> {
-                const user = await this.userRepository.findUserByEmail(email);
-                if (!user) {
-                    throw new Error('User not found');
-                }
-
-                const isMatch = await bcrypt.compare(plainPassword, user.password);
-                if (!isMatch) {
-                    throw new Error('Invalid credentials');
-                }
-
-                const token = jwt.sign({ id: user.id }, JWT_KEY, { expiresIn: '1h' });
-                return token;
+            const isMatch = await bcrypt.compare(plainPassword, user.password);
+            if (!isMatch) {
+                throw new Error('Invalid credentials');
             }
-        }
 
-        module.exports = { UserService };
+            const token = jwt.sign({ id: user.id }, JWT_KEY, { expiresIn: '1h' });
+            return token;
+        };
+
+        module.exports = {
+            registerUser,
+            loginUser
+        };
     `,
     userRepository: `
         const { User } = require('../models/user');
@@ -109,24 +104,22 @@ const tsTemplates = {
             password: string;
         }
 
-        class UserRepository {
-            async createUser(data: UserAttributes): Promise<any> {
-                try {
-                    const user = await User.create(data);
-                    return user;
-                } catch (error) {
-                    throw { error };
-                }
+        const createUser = async (data: UserAttributes): Promise<any> => {
+            try {
+                const user = await User.create(data);
+                return user;
+            } catch (error) {
+                throw { error };
             }
+        };
 
-            async findUserByEmail(email: string): Promise<any> {
-                return await User.findOne({ where: { email } });
-            }
-        }
+        const findUserByEmail = async (email: string): Promise<any> => {
+            return await User.findOne({ where: { email } });
+        };
 
-        module.exports = { UserRepository };
+        module.exports = {
+            createUser,
+            findUserByEmail
+        };
     `,
 };
-
-// Example usage
-console.log(tsTemplates);

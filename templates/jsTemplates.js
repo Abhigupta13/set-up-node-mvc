@@ -112,5 +112,3 @@ const jsTemplates = {
     `,
 };
 
-// Example usage
-console.log(jsTemplates);
