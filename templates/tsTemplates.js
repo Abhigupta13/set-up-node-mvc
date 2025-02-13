@@ -122,7 +122,7 @@ const tsTemplates = {
             findUserByEmail
         };
     `,
-    userRoutes: `
+    userRoute: `
         import express, { Router } from 'express';
         const { create, signIn } = require('../controllers/userController');
 

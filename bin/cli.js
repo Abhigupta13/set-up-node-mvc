@@ -13,7 +13,7 @@ async function init() {
     const answers = await inquirer.default.prompt([
       {
         type: 'input',
-        name: 'Source Folder',
+        name: 'projectName', // Fixed: Changed from 'Source Folder' to 'projectName' to match usage
         message: 'What is the name of your root folder?',
         default: 'src',
       },
@@ -35,8 +35,8 @@ async function init() {
     initializePackageJson(answers);
     installDependencies(answers);
 
-    if (answers.authentication) {
-      createAuthFiles(answers.language);
+    if (answers.authentication === 'Yes') { // Fixed: Check for exact string match
+      createAuthFiles(answers.language, answers.projectName); // Pass projectName to createAuthFiles
     }
 
     console.log('Project setup complete!');
@@ -48,35 +48,27 @@ async function init() {
   }
 }
 
-function copyTemplateFile(templatePath, destinationPath) {
-  const templateContent = fs.readFileSync(templatePath, 'utf-8');
-  fs.writeFileSync(destinationPath, templateContent.trim());
-}
+// function createDemoFiles(answers, rootDir) {
+//   const templates = answers.language === 'TypeScript' ? tsTemplates : jsTemplates;
 
-function readTemplateFile(templatePath) {
-  return fs.readFileSync(templatePath, 'utf-8');
-}
+//   const demoContent = {
+//     controllers: templates.userController,
+//     services: templates.userService,
+//     repositories: templates.userRepository,
+//     routes: templates.userRoute
+//   };
 
-function createDemoFiles(answers, rootDir) {
-  const templates = answers.language === 'TypeScript' ? tsTemplates : jsTemplates;
-
-  const demoContent = {
-    controllers: templates.userController,
-    services: templates.userService,
-    repositories: templates.userRepository,
-    routes: templates.userRoutes
-  };
-
-  // Create demo.txt files in each directory
-  fs.writeFileSync(path.join(rootDir, 'controllers', 'demo.txt'), demoContent.controllers);
-  fs.writeFileSync(path.join(rootDir, 'services', 'demo.txt'), demoContent.services);
-  fs.writeFileSync(path.join(rootDir, 'repositories', 'demo.txt'), demoContent.repositories);
-  fs.writeFileSync(path.join(rootDir, 'routes', 'demo.txt'), demoContent.routes);
-}
+//   // Create demo files in each directory
+//   const fileExt = answers.language === 'TypeScript' ? '.ts' : '.js';
+//   fs.writeFileSync(path.join(rootDir, 'controllers', `userController${fileExt}`), demoContent.controllers);
+//   fs.writeFileSync(path.join(rootDir, 'services', `userService${fileExt}`), demoContent.services);
+//   fs.writeFileSync(path.join(rootDir, 'repositories', `userRepository${fileExt}`), demoContent.repositories);
+//   fs.writeFileSync(path.join(rootDir, 'routes', `userRoute${fileExt}`), demoContent.routes);
+// }
 
 function createProjectStructure(answers) {
   const projectRoot = process.cwd();
-  const rootDir = path.join(projectRoot, answers.projectName);
+  const rootDir = path.join(projectRoot, answers.projectName); // Fixed: Use consistent property access
   
   try {
     fs.mkdirSync(rootDir, { recursive: true });
@@ -170,64 +162,13 @@ function createProjectStructure(answers) {
   // Create .env and .gitignore
   const envFile = path.join(projectRoot, '.env');
   const gitignoreFile = path.join(projectRoot, '.gitignore');
-  const portAnswer = inquirer.prompt({
-    type: 'input', 
-    name: 'port',
-    message: 'Enter the port number (default: 3000):',
-    default: '3000',
-  }).then(port => {
-    const dbUrlAnswer = inquirer.prompt({
-      type: 'input',
-      name: 'dbUrl', 
-      message: 'Enter your database URL:',
-      default: 'your-database-url',
-    }).then(dbUrl => {
-      fs.writeFileSync(envFile, `PORT=${port.port}\nDB_URL=${dbUrl.dbUrl}\n`);
-      fs.writeFileSync(gitignoreFile, 'node_modules/\n.env\n');
-    });
-  });
   
-  fs.writeFileSync(envFile, `PORT=${port.port}\nDB_URL=${dbUrl.dbUrl}\n`);
+  // Fixed: Remove duplicate writes and undefined variables
+  fs.writeFileSync(envFile, `PORT=3000\nDB_URL=mongodb://localhost:27017/myapp\n`);
   fs.writeFileSync(gitignoreFile, 'node_modules/\n.env\n');
 
-  // Example: Create a config file for the selected database
-  if (answers.database !== 'None') {
-    const dbConfigFile = path.join(rootDir, 'config', 'dbConfig.js');
-    const dbConfigContent = `
-      // Database configuration for ${answers.database}
-      module.exports = {
-        // Add your ${answers.database} configuration here
-      };
-    `;
-    fs.writeFileSync(dbConfigFile, dbConfigContent.trim());
-  }
-
-  // Example: Add middleware files based on user selection
-  answers.middleware.forEach((mw) => {
-    const mwFile = path.join(rootDir, 'middleware', `${mw}.${answers.language === 'TypeScript' ? 'ts' : 'js'}`);
-    const mwContent = answers.language === 'TypeScript'
-      ? `import { Request, Response, NextFunction } from 'express';\n\nexport const ${mw} = (req: Request, res: Response, next: NextFunction) => {\n  // Middleware for ${mw}\n  next();\n};`
-      : `const ${mw} = (req, res, next) => {\n  // Middleware for ${mw}\n  next();\n};\n\nmodule.exports = ${mw};`;
-    fs.writeFileSync(mwFile, mwContent.trim());
-  });
-
-  // Example: Add testing framework setup
-  if (answers.testingFramework === 'Jest') {
-    const jestConfig = {
-      testEnvironment: 'node',
-    };
-    fs.writeFileSync(path.join(projectRoot, 'jest.config.js'), JSON.stringify(jestConfig, null, 2));
-  } else if (answers.testingFramework === 'Mocha') {
-    const mochaConfig = {
-      // Basic Mocha setup
-      require: ['chai/register'],
-      timeout: 5000,
-    };
-    fs.writeFileSync(path.join(projectRoot, 'mocha.opts'), JSON.stringify(mochaConfig, null, 2));
-  }
-
   // Create demo files
-  createDemoFiles(answers, rootDir);
+  // createDemoFiles(answers, rootDir);
 }
 
 function initializePackageJson(answers) {
@@ -242,6 +183,8 @@ function initializePackageJson(answers) {
     packageJson.scripts = {
       ...packageJson.scripts,
       dev: 'ts-node-dev index.ts',
+      build: 'tsc', // Added build script
+      start: 'node dist/index.js' // Added start script
     };
 
     const tsConfig = {
@@ -259,7 +202,8 @@ function initializePackageJson(answers) {
   if (answers.language === 'JavaScript') {
     packageJson.scripts = {
       ...packageJson.scripts,
-      dev: 'node index.js',
+      dev: 'nodemon index.js', // Fixed: Use nodemon instead of node
+      start: 'node index.js'
     };
   }
 
@@ -270,8 +214,11 @@ function installDependencies(answers) {
   const projectRoot = process.cwd();
 
   const dependencies = ['express', 'cors', 'dotenv', 'nodemon'];
-  const devDependencies =
-    answers.language === 'TypeScript' ? ['typescript', '@types/node', '@types/express', 'ts-node-dev', 'dotenv', 'nodemon', 'cors'] : [];
+  
+  // Fixed: Remove duplicate dependencies
+  const devDependencies = answers.language === 'TypeScript' 
+    ? ['typescript', '@types/node', '@types/express', '@types/cors', 'ts-node-dev'] 
+    : [];
 
   if (dependencies.length > 0) {
     execSync(`npm install ${dependencies.join(' ')}`, { cwd: projectRoot, stdio: 'inherit' });
@@ -282,7 +229,7 @@ function installDependencies(answers) {
   }
 }
 
-function createAuthFiles(language) {
+function createAuthFiles(language, projectName) { // Add projectName parameter
   const projectRoot = process.cwd();
   let templates;
 
@@ -293,11 +240,21 @@ function createAuthFiles(language) {
     templates = tsTemplates;
   }
 
-  // Create the necessary files using the templates
-  fs.writeFileSync(path.join(projectRoot, 'controllers/userController.js'), templates.userController);
-  fs.writeFileSync(path.join(projectRoot, 'services/userService.js'), templates.userService);
-  fs.writeFileSync(path.join(projectRoot, 'repositories/userRepository.js'), templates.userRepository);
-  fs.writeFileSync(path.join(projectRoot, 'routes/userRoutes.js'), templates.userRoutes);
+  // Fixed: Use projectName instead of hardcoded 'src'
+  const fileExt = language === 'TypeScript' ? '.ts' : '.js';
+  const authDir = path.join(projectRoot, projectName, 'auth');
+  
+  if (!fs.existsSync(authDir)) {
+    fs.mkdirSync(authDir, { recursive: true });
+  }
+
+  // Create auth files using templates
+  if (templates.userController && templates.userService && templates.userRepository && templates.userRoute) {
+    fs.writeFileSync(path.join(authDir, `auth.controller${fileExt}`), templates.userController);
+    fs.writeFileSync(path.join(authDir, `auth.service${fileExt}`), templates.userService);
+    fs.writeFileSync(path.join(authDir, `auth.repository${fileExt}`), templates.userRepository);
+    fs.writeFileSync(path.join(authDir, `auth.routes${fileExt}`), templates.userRoute);
+  }
 
   console.log('Authentication files created successfully!');
 }

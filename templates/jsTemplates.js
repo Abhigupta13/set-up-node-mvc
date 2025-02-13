@@ -110,7 +110,7 @@ const jsTemplates = {
             findUserByEmail
         };
     `,
-    userRoutes: `
+    userRoute: `
         const express = require('express');
         const { create, signIn } = require('../controllers/userController');
 
