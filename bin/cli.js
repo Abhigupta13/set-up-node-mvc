@@ -13,7 +13,7 @@ async function init() {
     const answers = await inquirer.default.prompt([
       {
         type: 'input',
-        name: 'projectName', // Fixed: Changed from 'Source Folder' to 'projectName' to match usage
+        name: 'projectName', 
         message: 'What is the name of your root folder?',
         default: 'src',
       },
@@ -23,6 +23,13 @@ async function init() {
         message: 'Which programming language do you want to use?',
         choices: ['JavaScript', 'TypeScript'],
       },
+      {
+        type: 'list',
+        name: 'database',
+        message: 'Which database do you want to use?',
+        choices: ['MongoDB', 'Other'],
+      },
+
       {
         type: 'list',
         name: 'authentication',
@@ -45,6 +52,12 @@ async function init() {
       createAuthFiles(answers.language, answers.projectName); // Pass projectName to createAuthFiles
     }
 
+    // If MongoDB is selected, create the database connection file
+    if (answers.database === 'MongoDB') {
+      createDatabaseFile(answers.language, answers.projectName);
+      createUserModel(answers.language, answers.projectName);
+    }
+
     console.log('Project setup complete!');
   } catch (error) {
     console.error('Error occurred during project setup:', error.message);
@@ -54,6 +67,53 @@ async function init() {
   }
 }
 
+function createDatabaseFile(language, projectName) {
+  const projectRoot = process.cwd();
+  const configDir = path.join(projectRoot, projectName, 'config');
+  const fileExt = language === 'TypeScript' ? 'ts' : 'js';
+  const dbFilePath = path.join(configDir, `database.${fileExt}`);
+
+  // Create the config directory if it doesn't exist
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true });
+  }
+
+  // Database connection logic
+  const dbContent = language === 'TypeScript' ? `
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const connectDB = async () => {
+    try {
+        const connect = await mongoose.connect(process.env.MONGODB_URL);
+        console.log(\`Database connected: \${connect.connection.host}\`);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export default connectDB;
+` : `
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const connectDB = async () => {
+    try {
+        const connect = await mongoose.connect(process.env.MONGODB_URL);
+        console.log(\`Database connected: \${connect.connection.host}\`);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+module.exports = connectDB;
+`;
+
+  fs.writeFileSync(dbFilePath, dbContent.trim());
+  console.log(`Database connection file created at: ${dbFilePath}`);
+}
 
 function createProjectStructure(answers) {
   const projectRoot = process.cwd();
@@ -70,23 +130,26 @@ function createProjectStructure(answers) {
   const entryFile = `index.${answers.language === 'TypeScript' ? 'ts' : 'js'}`;
   const indexFile = path.join(projectRoot, entryFile);
   const expressCode = `
-    const express = require('express');
-    const cors = require('cors');
-    const dotenv = require('dotenv');
-    dotenv.config();
-    const app = express();
-    const routes = require('./${answers.projectName}/routes');
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/database'); // Import the database connection
+dotenv.config();
+const app = express();
+const routes = require('./${answers.projectName}/routes');
+const PORT = 8080  || process.env.PORT
 
-    // Middleware
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-    app.use(cors());
-    
-    app.use('/api', routes);
-    
-    app.listen(3000, () => 
-        console.log('Server running on port 3000')
-        );
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+app.use('/api', routes);
+
+app.listen(PORT, async () => {
+    await connectDB(); // Connect to the database
+    console.log('Server running on port', PORT);
+});
   `;
   
   try {
@@ -131,16 +194,16 @@ function createProjectStructure(answers) {
   const routesFile = path.join(rootDir, 'routes', `index.${answers.language === 'TypeScript' ? 'ts' : 'js'}`);
   const routeCode = answers.language === 'TypeScript'
     ? `
-      const { Router } = require('express');
-      const router = Router();
-      router.get('/', (req: any, res: any) => res.send('API is working'));
-      module.exports = router;
+const { Router } = require('express');
+const router = Router();
+router.get('/', (req: any, res: any) => res.send('API is working'));
+module.exports = router;
     `
     : `
-      const { Router } = require('express');
-      const router = Router();
-      router.get('/', (req, res) => res.send('API is working'));
-      module.exports = router;
+const { Router } = require('express');
+const router = Router();
+router.get('/', (req, res) => res.send('API is working'));
+module.exports = router;
     `;
   if (!fs.existsSync(routesFile)) {
     fs.writeFileSync(routesFile, routeCode.trim());
@@ -153,7 +216,7 @@ function createProjectStructure(answers) {
   const gitignoreFile = path.join(projectRoot, '.gitignore');
   
   // Fixed: Remove duplicate writes and undefined variables
-  fs.writeFileSync(envFile, `PORT=3000\nDB_URL=mongodb://localhost:27017/myapp\nJWT_KEY=your_jwt_secret_key\n`);
+  fs.writeFileSync(envFile, `PORT=8080\nDB_URL=mongodb://localhost:27017/myapp\nJWT_KEY=your_jwt_secret_key\n`);
   fs.writeFileSync(gitignoreFile, 'node_modules/\n.env\n');
 
 }
@@ -245,6 +308,71 @@ function createAuthFiles(language, projectName) { // Add projectName parameter
 
   console.log('Authentication files created successfully!');
   console.log('Database update coming soon... For now set up your database manually');
+}
+
+function createUserModel(language, projectName) {
+    const projectRoot = process.cwd();
+    const modelsDir = path.join(projectRoot, projectName, 'models');
+    const fileExt = language === 'TypeScript' ? 'ts' : 'js';
+    const userModelPath = path.join(modelsDir, `User.${fileExt}`);
+
+    // Create the models directory if it doesn't exist
+    if (!fs.existsSync(modelsDir)) {
+        fs.mkdirSync(modelsDir, { recursive: true });
+    }
+
+    // User model content
+    const userModelContent = language === 'TypeScript' ? `
+import mongoose, { Schema } from 'mongoose';
+
+const userSchema = new Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: Buffer, required: true },
+    role: { type: String, required: true, default: 'user' },
+}, { timestamps: true });
+
+const virtual = userSchema.virtual('id');
+virtual.get(function () {
+    return this._id;
+});
+
+userSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        delete ret._id;
+    },
+});
+
+export const User = mongoose.model('User', userSchema);
+` : `
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const userSchema = new Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: Buffer, required: true },
+    role: { type: String, required: true, default: 'user' },
+}, { timestamps: true });
+
+const virtual = userSchema.virtual('id');
+virtual.get(function () {
+    return this._id;
+});
+
+userSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        delete ret._id;
+    },
+});
+
+exports.User = mongoose.model('User', userSchema);
+`;
+
+    fs.writeFileSync(userModelPath, userModelContent.trim());
+    console.log(`User model created at: ${userModelPath}`);
 }
 
 init();
