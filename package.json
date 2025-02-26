@@ -1,6 +1,6 @@
 {
   "name": "set-up-node-mvc",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "A NPM package for set up mvc architecture for node and express with selected language and database",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,5 +19,29 @@
   "bin": {
     "set-up-node-mvc": "./bin/cli.js"
   },
+ "keywords": [
+    "node",
+    "express",
+    "mvc",
+    "architecture",
+    "setup",
+    "javascript",
+    "typescript",
+    "mongodb",
+    "npm",
+    "web development",
+    "backend",
+    "API",
+    "REST",
+    "mongoose",
+    "express.js",
+    "node.js",
+    "application",
+    "template",
+    "boilerplate",
+    "fullstack",
+    "JavaScript framework",
+    "TypeScript framework"
+  ],
   "main": "bin/cli.js"
 }
